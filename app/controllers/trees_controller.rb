@@ -9,6 +9,25 @@ class TreesController < ApplicationController
     render json: tree
   end
 
+  def update
+    tree = Tree.find(params[:id])
+    tree.update(tree_params)
+    if tree.valid?
+      render json: tree
+    else
+      render json: tree.errors
+    end
+  end
+
+  def destroy
+    tree = Tree.find(params[:id])
+    if tree.destroy
+      render json: tree
+    else
+      render json: tree.errors
+    end
+  end
+
   private
   def tree_params
     params.require(:tree).permit(:name, :age, :enjoys, :image)
