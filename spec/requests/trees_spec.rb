@@ -140,7 +140,7 @@ RSpec.describe "Trees", type: :request do
         }
       }
 
-      put "/trees/#{tree.id}", params: update_params
+      patch "/trees/#{tree.id}", params: update_params
 
       expect(response).to have_http_status(200)
 
@@ -149,6 +149,38 @@ RSpec.describe "Trees", type: :request do
       expect(tree.name).to eq 'Ginger'
 
     end
+
+    it "should fail to update without proper params" do
+    tree = Tree.create(
+        name: 'Maple',
+        age: 150,
+        enjoys: 'Making syrup',
+        image: 'https://cdn.shopify.com/s/files/1/0059/8835/2052/products/Sugar-Maple_FGT_600x600_6ad4956a-ec6e-4ab2-a66a-1a1245471195_grande.jpg?v=1612444329'
+      )
+
+    update_params = {
+      tree: {
+        name: nil,
+        age: nil,
+        enjoys: nil,
+        image: nil
+      }
+    }
+
+    patch "/trees/#{tree.id}", params: update_params
+    
+    expect(response).to have_http_status(422)
+    
+    json = JSON.parse(response.body)
+    # puts response.body
+    expect(json['name']).to include "can't be blank"
+    expect(json['age']).to include "can't be blank"
+    expect(json['enjoys']).to include "can't be blank"
+    expect(json['image']).to include "can't be blank"
+
+  end
+    
+
   end
 
   describe "DELETE /destroy" do

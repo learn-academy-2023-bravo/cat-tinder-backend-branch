@@ -20,7 +20,7 @@ class TreesController < ApplicationController
     if tree.valid?
       render json: tree
     else
-      render json: tree.errors
+      render json: tree.errors, status: 422
     end
   end
 
