@@ -38,6 +38,88 @@ RSpec.describe "Trees", type: :request do
 
       expect(tree.name).to eq 'Maple'
     end
+
+    it "doesn't create a tree without a name" do
+      tree_params = {
+        tree: {
+          age: 400,
+          enjoys: 'standing in one spot',
+          image: 'treepic.png'
+        }
+      }
+
+      post '/trees', params: tree_params
+
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['name']).to include "can't be blank"
+    end
+
+
+    it "doesn't create a tree without an age" do
+      tree_params = {
+        tree: {
+          name: 'Pinesol',
+          enjoys: 'producing pine cones',
+          image: 'treepic.png'
+        }
+      }
+
+      post '/trees', params: tree_params
+
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['age']).to include "can't be blank"
+    end
+
+    it "doesn't create a tree without an image" do
+      tree_params = {
+        tree: {
+          name: 'Pinesol',
+          enjoys: 'producing pine cones',
+          age: 246
+        }
+      }
+
+      post '/trees', params: tree_params
+
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['image']).to include "can't be blank"
+    end
+
+    it "doesn't create a tree without an enjoys" do
+      tree_params = {
+        tree: {
+          name: 'Pinesol',
+          image: 'asdf.jpg',
+          age: 246
+        }
+      }
+
+      post '/trees', params: tree_params
+
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['enjoys']).to include "can't be blank"
+    end
+
+    it "doesn't create a tree if enjoys is smaller than 10" do
+      tree_params = {
+        tree: {
+          name: 'Pinesol',
+          image: 'asdf.jpg',
+          enjoys: '123456789',
+          age: 246
+        }
+      }
+
+      post '/trees', params: tree_params
+
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['enjoys']).to include "is too short (minimum is 10 characters)"
+    end
   end
 
   describe "PUT /update" do
@@ -85,4 +167,5 @@ RSpec.describe "Trees", type: :request do
 
     end
   end
+
 end

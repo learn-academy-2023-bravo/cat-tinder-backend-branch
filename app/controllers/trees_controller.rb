@@ -6,7 +6,12 @@ class TreesController < ApplicationController
 
   def create
     tree = Tree.create(tree_params)
-    render json: tree
+
+    if tree.valid?
+      render json: tree
+    else
+      render json: tree.errors, status: 422
+    end
   end
 
   def update
